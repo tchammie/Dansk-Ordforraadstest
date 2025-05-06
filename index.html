@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Ordforrådstest</title>
+  <style>
+    body {
+      font-family: Arial;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      padding-left: 300px;
+      justify-content: baseline;
+      padding-top: 100px;
+      color:black;
+      font-size: 20px;
+      height: 100vh;
+    }
+    #spørgsmål {
+      font-size: 60px;
+      margin-bottom: 10px;
+    }
+    #korrektSvar {
+      margin-bottom: 10px;
+      color: green;
+    }
+    #burgerSvar {
+      margin-bottom: 10px;
+    }
+    #svarBeholder {
+    }
+    #svar {
+      font-size:20px;
+      padding: 5px;
+      width: 200px;
+    }
+    #resultat {
+      margin-top: 20px;
+    }
+    #næsteKnap {
+      margin-top: 10px;
+      display: none;
+    }
+    #svarSektion {
+      display: block;
+    }
+    #resultatSektion {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="spørgsmålOmråde">
+    <button id="begyndKnap">Begynd Test</button>
+    
+    <div id="svarSektion" style="display: none;">
+      <div id="spørgsmål"></div>
+      <div id="svarBeholder">
+        <input type="text" id="svar" placeholder="Indtast dansk">
+      </div>
+      <div id="resultat"></div>
+      <button id="indsentSvarKnap">Indsend Svaret</button>
+    </div>
+
+    <div id="resultatSektion">
+      <div id="engelskOrd"></div>
+      <div id="korrektSvar"></div>
+      <div id="burgerSvar"></div>
+      <button id="næsteKnap">Næste Ord</button>
+    </div>
+  </div>
+
+  <script>
+    const ordList = [
+      { en: "I", da: "jeg" },
+      { en: "you", da: "du" },
+      { en: "she", da: "hun" },
+      { en: "he", da: "han" },
+      { en: "it", da: "det" },
+      { en: "this", da: "dette" },
+      { en: "we", da: "vi" },
+      { en: "you (plural)", da: "I" },
+      { en: "they", da: "de" }
+    ];
+
+    let remaining = [...ordList];
+    let currentOrd = null;
+
+    const begyndKnap = document.getElementById("begyndKnap");
+    const spørgsmål = document.getElementById("spørgsmål");
+    const svar = document.getElementById("svar");
+    const resultat = document.getElementById("resultat");
+    const indsentSvarKnap = document.getElementById("indsentSvarKnap");
+    const næsteKnap = document.getElementById("næsteKnap");
+    const svarSektion = document.getElementById("svarSektion");
+    const resultatSektion = document.getElementById("resultatSektion");
+    const engelskOrd = document.getElementById("engelskOrd");
+    const korrektSvarDiv = document.getElementById("korrektSvar");
+    const burgerSvarDiv = document.getElementById("burgerSvar");
+
+    function visNæsteSpørgsmål() {
+      resultat.textContent = "";
+      svar.value = "";
+      svar.style.display = "inline";
+      næsteKnap.style.display = "none";
+
+      if (remaining.length === 0) {
+        spørgsmål.textContent = "Alle Korrekt!";
+        spørgsmål.style.display = "block";
+        svarSektion.style.display = "none";
+        resultatSektion.style.display = "none";
+        return;
+      }
+
+      currentOrd = remaining[Math.floor(Math.random() * remaining.length)];
+      spørgsmål.textContent = `${currentOrd.en}`;
+      svarSektion.style.display = "block";
+      resultatSektion.style.display = "none";
+    }
+
+    function tjekSvar() {
+      const burgerSvar = svar.value.trim().toLowerCase();
+      const korrektSvarTekst = currentOrd.da.toLowerCase();
+
+      engelskOrd.textContent = `Engelsk: ${currentOrd.en}`;
+      korrektSvarDiv.textContent = `Korrekt Svar: ${currentOrd.da}`;
+      burgerSvarDiv.textContent = `Dit Svar: ${burgerSvar}`;
+
+      if (burgerSvar === korrektSvarTekst) {
+        resultat.textContent = "Korrekt!";
+      } else {
+        resultat.textContent = `Forkert!`;
+      }
+
+      svarSektion.style.display = "none";
+      resultatSektion.style.display = "block";
+      næsteKnap.style.display = "inline";
+
+      remaining = remaining.filter(ord => ord !== currentOrd);
+    }
+
+    begyndKnap.addEventListener("click", () => {
+      begyndKnap.style.display = "none";
+      visNæsteSpørgsmål();
+    });
+
+    indsentSvarKnap.addEventListener("click", tjekSvar);
+
+    næsteKnap.addEventListener("click", visNæsteSpørgsmål);
+
+    svar.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        tjekSvar();
+      }
+    });
+
+    næsteKnap.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        visNæsteSpørgsmål();
+      }
+    });
+
+  </script>
+</body>
+</html>
